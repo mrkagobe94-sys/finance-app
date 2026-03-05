@@ -1,6 +1,7 @@
 Flask
-flask-mysqldb
-flask-bcrypt
-scikit-learn
+psycopg2-binary
+Flask-Bcrypt
+python-dotenv
 pandas
 numpy
+scikit-learn
