@@ -22,14 +22,8 @@ if not DATABASE_URL:
     raise Exception("DATABASE_URL is not set in environment variables")
 
 def get_db_connection():
-    result = urlparse(DATABASE_URL)
-
     return psycopg2.connect(
-        host=result.hostname,
-        database=result.path[1:],
-        user=result.username,
-        password=result.password,
-        port=result.port,
+        os.getenv("DATABASE_URL"),
         sslmode="require"
     )
 
