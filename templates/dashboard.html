@@ -1,0 +1,334 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    /* Custom styling for the progress ring to simplify the Tailwind complexity */
+    .progress-ring-circle {
+        transition: stroke-dashoffset 0.5s ease-in-out;
+    }
+
+    /* Styles for the sleek theme toggle */
+    #theme-toggle-sleek {
+        @apply flex items-center justify-center p-2 rounded-full cursor-pointer;
+        @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300;
+        @apply shadow-inner hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300;
+    }
+</style>
+
+<div class="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-sans">
+
+    <aside class="w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hidden md:flex flex-col border-r border-gray-200 dark:border-gray-700 shadow-xl dark:shadow-none">
+        <div class="p-6 font-extrabold text-2xl tracking-wide text-orange-600 dark:text-orange-400">
+            FIN.AI
+        </div>
+
+        <nav class="flex-1 mt-8 space-y-2 px-4">
+            <a href="{{ url_for('dashboard') }}"
+               class="flex items-center space-x-3 py-3 px-4 bg-orange-50 dark:bg-gray-700 border-l-4 border-orange-600 dark:border-orange-500 font-semibold rounded-lg text-gray-900 dark:text-gray-100 transition-colors duration-200">
+                <i class="fas fa-home w-5"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="{{ url_for('budgets') }}"
+               class="flex items-center space-x-3 py-3 px-4 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                <i class="fas fa-money-check-alt w-5"></i>
+                <span>Budgets</span>
+            </a>
+            <a href="{{ url_for('goals') }}"
+               class="flex items-center space-x-3 py-3 px-4 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                <i class="fas fa-bullseye w-5"></i>
+                <span>Goals</span>
+            </a>
+
+            <a href="{{ url_for('reports') }}"
+               class="flex items-center space-x-3 py-3 px-4 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                <i class="fas fa-chart-line w-5"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+
+        <div class="m-6 border-t pt-4 border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <button id="theme-toggle-sleek">
+                <span id="sun-icon" class="hidden">
+                    <i class="fas fa-sun text-yellow-500 text-lg"></i>
+                </span>
+                <span id="moon-icon" class="hidden">
+                    <i class="fas fa-moon text-indigo-500 text-lg"></i>
+                </span>
+            </button>
+            
+            <a href="{{ url_for('logout') }}"
+               class="py-2 px-4 text-center bg-gray-100 dark:bg-gray-700 text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg font-semibold transition text-sm">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </a>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-y-auto">
+
+        <header class="bg-white dark:bg-gray-800 shadow-md p-5 flex justify-between items-center sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                    Welcome back, {{ user }}
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Your financial summary at a glance
+                </p>
+            </div>
+
+            <div class="bg-orange-100 dark:bg-gray-700 text-orange-600 px-6 py-2 rounded-xl font-extrabold text-sm shadow-inner dark:shadow-none">
+                <span class="text-gray-600 dark:text-gray-300 font-medium">Total Spent:</span> UGX {{ "{:,.2f}".format(total_spent) }}
+            </div>
+        </header>
+
+        <div class="p-8 space-y-8">
+
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 text-white p-6 rounded-2xl shadow-xl transition-colors duration-300">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-bold">Proactive AI Insight</h3>
+                        <p class="mt-2 text-base font-light">
+                            {{ ai_msg }}
+                        </p>
+                    </div>
+                    <i class="fas fa-brain text-4xl opacity-70"></i>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl dark:shadow-none transition-colors duration-300 border border-gray-100 dark:border-gray-700">
+                <div class="flex justify-between items-center mb-6 border-b pb-3 border-gray-100 dark:border-gray-700">
+                    <h3 class="font-bold text-xl text-gray-800 dark:text-gray-100">
+                        Budget Health Status
+                    </h3>
+                    <a href="{{ url_for('budgets') }}" class="text-sm text-orange-600 dark:text-orange-400 font-semibold hover:underline">
+                        Manage Budgets
+                    </a>
+                </div>
+
+                {% if budget_statuses %}
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+                    {% for status in budget_statuses %}
+                    {% set total = status.spent_ugx + status.remaining_ugx %}
+                    {% set percentage = (status.spent_ugx / total * 100) if total > 0 else 0 %}
+                    {% set pct = 100 if percentage > 100 else percentage|round|int %}
+                    {% set ring = 'text-red-500' if status.status == 'overspent' else 'text-green-500' %}
+                    {% set badge_bg = 'bg-red-500' if status.status == 'overspent' else 'bg-green-500' %}
+
+                    <div class="flex flex-col items-center gap-3">
+
+                        <div class="relative w-28 h-28">
+                            <svg class="w-full h-full transform -rotate-90">
+                                <circle cx="50%" cy="50%" r="45%" stroke="#f3f4f6" stroke-width="6" fill="none" class="dark:stroke-gray-700"/>
+                                <circle cx="50%" cy="50%" r="45%" stroke="currentColor" stroke-width="6" fill="none"
+                                        stroke-dasharray="283"
+                                        stroke-dashoffset="{{ 283 - (283 * pct / 100) }}"
+                                        class="progress-ring-circle {{ ring }}"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center text-lg font-extrabold text-gray-800 dark:text-gray-100">
+                                {{ pct }}%
+                            </div>
+                        </div>
+
+                        <div class="text-center w-full">
+                            <p class="font-bold text-sm text-gray-800 dark:text-gray-100 mb-1">{{ status.category }}</p>
+                            <div class="flex justify-center items-center">
+                                <span class="w-2 h-2 rounded-full mr-2 {{ badge_bg }}"></span>
+                                <span class="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                                    {{ status.status|upper }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center text-gray-500 dark:text-gray-400 text-sm py-4">
+                    No active budgets. <a href="{{ url_for('budgets') }}" class="text-orange-600 hover:underline">Set a budget</a> to see your health status.
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl dark:shadow-none lg:col-span-1 transition-colors duration-300 border border-gray-100 dark:border-gray-700">
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-5 border-b pb-3">
+                        New Transaction Entry
+                    </h3>
+
+                    <form action="/add_transaction" method="POST" class="space-y-4">
+                        <input type="date" name="date" required 
+                               class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition">
+
+                        <div class="flex gap-2">
+                            <input type="number" step="0.01" name="amount" placeholder="Amount" required
+                                   class="w-2/3 p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition">
+                            <select name="currency" 
+                                    class="w-1/3 p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition">
+                                <option>UGX</option>
+                                <option>USD</option>
+                                <option>EUR</option>
+                                <option>JPY</option>
+                            </select>
+                        </div>
+
+                        <select name="category" id="category-select"
+                                class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition">
+                            <option>Food</option>
+                            <option>Transport</option>
+                            <option>Utilities</option>
+                            <option>Entertainment</option>
+                            <option>Income</option>
+                            <option>Other</option>
+                        </select>
+
+                        <input type="text" name="description" id="transaction-description"
+                               placeholder="Description (e.g., Coffee at Starbucks)"
+                               oninput="fetchCategoryPrediction()"
+                               class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition">
+
+                        <button class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold p-3 rounded-xl shadow-lg transition">
+                            <i class="fas fa-plus mr-2"></i> Save Entry
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl dark:shadow-none lg:col-span-2 transition-colors duration-300 border border-gray-100 dark:border-gray-700">
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-5 border-b pb-3">
+                        Transaction History
+                    </h3>
+
+                    <div class="overflow-x-auto max-h-[400px]">
+                        <table class="w-full text-sm text-gray-700 dark:text-gray-200">
+                            <thead class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">
+                                <tr>
+                                    <th class="py-3 px-2 text-left">Date</th>
+                                    <th class="py-3 px-2 text-left">Description</th>
+                                    <th class="py-3 px-2 text-left">Category</th>
+                                    <th class="py-3 px-2 text-right">Amount</th>
+                                    <th class="py-3 px-2 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in transactions %}
+                                <tr class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                    <td class="py-3 px-2 text-xs font-medium">{{ t[6] }}</td>
+                                    <td class="py-3 px-2 text-sm text-gray-600 dark:text-gray-300 truncate max-w-[150px]">{{ t[5] or 'N/A' }}</td>
+                                    <td class="py-3 px-2 text-xs">
+                                        <span class="px-3 py-1 rounded-full font-semibold text-gray-700 dark:text-gray-100 bg-gray-100 dark:bg-gray-700">{{ t[4] }}</span>
+                                    </td>
+                                    <td class="py-3 px-2 font-extrabold text-red-600 dark:text-red-400 text-right">
+                                        {{ t[3] }} {{ "{:,.2f}".format(t[2]) }}
+                                    </td>
+                                    <td class="py-3 px-2 flex justify-center gap-3">
+                                        <a href="{{ url_for('edit_transaction_form', transaction_id=t[0]) }}" class="text-orange-500 hover:text-orange-700">
+                                            <i class="fas fa-pen text-sm"></i>
+                                        </a>
+                                        <form method="POST" action="{{ url_for('delete_transaction', transaction_id=t[0]) }}" onsubmit="return confirm('Are you sure you want to delete this transaction?');">
+                                            <button type="submit" class="text-red-500 hover:text-red-700">
+                                                <i class="fas fa-trash-alt text-sm"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Dark / Light Mode Toggle Logic ---
+    const htmlEl = document.documentElement;
+    const themeToggleSleek = document.getElementById('theme-toggle-sleek');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
+
+    // Function to set the theme
+    function setTheme(theme) {
+        if (theme === 'dark') {
+            htmlEl.classList.add('dark');
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+            localStorage.theme = 'dark';
+        } else {
+            htmlEl.classList.remove('dark');
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+            localStorage.theme = 'light';
+        }
+    }
+
+    // Initialize theme based on preference or system
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        setTheme('dark');
+    } else {
+        setTheme('light');
+    }
+
+    // Toggle event listener
+    themeToggleSleek.addEventListener('click', () => {
+        const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+    });
+    
+    // --- AI Auto-Categorization Script ---
+    let typingTimer;
+    const doneTypingInterval = 800; // 0.8 seconds delay after typing stops
+
+    function fetchCategoryPrediction() {
+        clearTimeout(typingTimer);
+        
+        const descriptionInput = document.getElementById('transaction-description');
+        const description = descriptionInput.value.trim();
+
+        if (description.length < 3) return; 
+
+        // Add a temporary loading state to the input field
+        descriptionInput.classList.add('ring-2', 'ring-orange-300');
+
+
+        typingTimer = setTimeout(async () => {
+            
+            const response = await fetch('/predict_category', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({description: description})
+            });
+            const data = await response.json();
+            
+            const predictedCategory = data.category;
+            const categorySelect = document.getElementById('category-select');
+            
+            // Remove loading state
+            descriptionInput.classList.remove('ring-2', 'ring-orange-300');
+
+            if (predictedCategory) {
+                // Find and select the predicted option
+                let optionFound = false;
+                for (let i = 0; i < categorySelect.options.length; i++) {
+                    if (categorySelect.options[i].value === predictedCategory) {
+                        categorySelect.selectedIndex = i;
+                        
+                        // Highlight the category select field with a temporary green ring
+                        categorySelect.classList.add('ring-2', 'ring-green-500', 'border-green-500');
+                        setTimeout(() => {
+                            categorySelect.classList.remove('ring-2', 'ring-green-500', 'border-green-500');
+                        }, 2000);
+                        optionFound = true;
+                        break;
+                    }
+                }
+                if (optionFound) {
+                    console.log(`AI predicted category: ${predictedCategory}`);
+                }
+            }
+        }, doneTypingInterval);
+    }
+    // --- End AI Auto-Categorization Script ---
+
+</script>
+{% endblock %}

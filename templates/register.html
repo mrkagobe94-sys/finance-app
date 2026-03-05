@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-sans p-4">
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl max-w-5xl w-full border border-gray-100 dark:border-gray-700">
+
+        <div class="hidden md:flex flex-col justify-between text-gray-800 dark:text-gray-200 p-4 border-r dark:border-gray-700">
+            <div>
+                <h2 class="text-4xl font-extrabold mb-4 text-orange-600 dark:text-orange-400">
+                    Build Wealth
+                </h2>
+                <h3 class="text-2xl font-bold mb-6 text-gray-700 dark:text-gray-100">
+                    With Data, Not Guesswork.
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+                    FIN.AI turns your income, expenses, and habits into actionable insights that help you grow faster and spend smarter.
+                    Join thousands who are achieving financial clarity.
+                </p>
+
+                <ul class="space-y-4 text-sm">
+                    <li class="flex items-center space-x-3">
+                        <i class="fas fa-robot text-indigo-500 w-4"></i>
+                        <span class="font-medium">AI-powered budgeting & forecasting</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <i class="fas fa-search-dollar text-indigo-500 w-4"></i>
+                        <span class="font-medium">Expense leak detection</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <i class="fas fa-heartbeat text-indigo-500 w-4"></i>
+                        <span class="font-medium">Real-time financial health score</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <i class="fas fa-shield-alt text-indigo-500 w-4"></i>
+                        <span class="font-medium">Encrypted, private & secure by design</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mt-10 text-xs italic text-gray-500 dark:text-gray-400">
+                Start tracking today. Your future balance will thank you.
+            </div>
+        </div>
+
+        <div class="p-6">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                    <i class="fas fa-user-plus mr-2 text-orange-600"></i> Create Account
+                </h1>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                    One step closer to financial clarity
+                </p>
+            </div>
+
+            <form method="POST" action="/register" class="space-y-6">
+
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="username">
+                        Username
+                    </label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input
+                            type="text"
+                            name="username"
+                            id="username"
+                            required
+                            class="w-full p-4 pl-12 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+                            placeholder="Choose a unique username"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="password">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            required
+                            class="w-full p-4 pl-12 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+                            placeholder="Create a strong password"
+                        >
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 ml-1">
+                        <i class="fas fa-info-circle mr-1"></i> Use 8+ characters. Mix letters, numbers & symbols.
+                    </p>
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-orange-600 to-indigo-600 text-white font-bold p-4 rounded-xl text-lg hover:from-orange-700 hover:to-indigo-700 shadow-lg transition duration-200"
+                >
+                    <i class="fas fa-hand-point-right mr-2"></i> Create My Account
+                </button>
+            </form>
+
+            <div class="mt-8 text-center border-t border-gray-200 dark:border-gray-700 pt-6">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Already part of the system?
+                </p>
+                <a href="/login" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline mt-1 block">
+                    <i class="fas fa-sign-in-alt mr-1"></i> Log in here
+                </a>
+            </div>
+
+            <div class="mt-8 grid grid-cols-3 gap-3 text-center text-xs">
+                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl dark:text-gray-300">
+                    <i class="fas fa-funnel-dollar text-lg text-green-500 mb-1"></i><br>
+                    <span class="font-bold">Track</span>
+                </div>
+                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl dark:text-gray-300">
+                    <i class="fas fa-brain text-lg text-blue-500 mb-1"></i><br>
+                    <span class="font-bold">Optimize</span>
+                </div>
+                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl dark:text-gray-300">
+                    <i class="fas fa-chart-pie text-lg text-yellow-500 mb-1"></i><br>
+                    <span class="font-bold">Grow</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

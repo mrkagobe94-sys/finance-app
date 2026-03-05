@@ -1,0 +1,161 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-sans">
+
+    <aside class="w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hidden md:flex flex-col border-r border-gray-200 dark:border-gray-700 shadow-xl dark:shadow-none">
+        <div class="p-6 font-extrabold text-2xl tracking-wide text-orange-600 dark:text-orange-400">
+            FIN.AI
+        </div>
+
+        <nav class="flex-1 mt-8 space-y-2 px-4">
+            <a href="{{ url_for('dashboard') }}"
+               class="flex items-center space-x-3 py-3 px-4 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                <i class="fas fa-home w-5"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="{{ url_for('budgets') }}"
+               class="flex items-center space-x-3 py-3 px-4 bg-orange-50 dark:bg-gray-700 border-l-4 border-orange-600 dark:border-orange-500 font-semibold rounded-lg text-gray-900 dark:text-gray-100 transition-colors duration-200">
+                <i class="fas fa-money-check-alt w-5"></i>
+                <span>Budgets</span>
+            </a>
+
+            <a href="{{ url_for('goals') }}"
+               class="flex items-center space-x-3 py-3 px-4 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                <i class="fas fa-bullseye w-5"></i>
+                <span>Goals</span>
+            </a>
+            
+            <a href="{{ url_for('reports') }}"
+               class="flex items-center space-x-3 py-3 px-4 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                <i class="fas fa-chart-line w-5"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+
+        <div class="m-6 border-t pt-4 border-gray-200 dark:border-gray-700 flex justify-end">
+            <a href="{{ url_for('logout') }}"
+               class="py-2 px-4 text-center bg-gray-100 dark:bg-gray-700 text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg font-semibold transition text-sm">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </a>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-y-auto">
+
+        <header class="bg-white dark:bg-gray-800 shadow-md p-5 sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                Budget Planning
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Tell your money where to go — before it disappears
+            </p>
+        </header>
+
+        <div class="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl dark:shadow-none h-fit border border-gray-100 dark:border-gray-700">
+                <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-5 border-b pb-3">
+                    <i class="fas fa-plus-circle mr-2 text-orange-600"></i> Set New Budget Goal
+                </h3>
+
+                <form action="{{ url_for('add_budget') }}" method="POST" class="space-y-4">
+
+                    <select name="category"
+                            class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition"
+                            required>
+                        <option value="" disabled selected>Select Category</option>
+                        {% for category in categories %}
+                        <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="flex gap-2">
+                        <input type="number" step="0.01" name="amount"
+                               placeholder="Budget Amount"
+                               class="w-2/3 p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition"
+                               required>
+                        <select name="currency" class="w-1/3 p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                            {% for currency in currencies %}
+                            <option value="{{ currency }}">{{ currency }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">Start Date</label>
+                        <input type="date" name="start_date"
+                               class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">End Date</label>
+                        <input type="date" name="end_date"
+                               class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition" required>
+                    </div>
+
+                    <button class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold p-3 rounded-xl shadow-lg transition">
+                        <i class="fas fa-lock mr-2"></i> Lock Budget
+                    </button>
+                </form>
+
+                <div class="mt-6 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs p-3 rounded-xl shadow-inner">
+                    <span class="font-bold text-orange-500">AI Tip:</span> Shorter budget periods improve discipline and accuracy. Try monthly or bi-weekly limits.
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl dark:shadow-none lg:col-span-2 overflow-auto max-h-[80vh] border border-gray-100 dark:border-gray-700">
+                <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100 mb-5 border-b pb-3">
+                    <i class="fas fa-clipboard-list mr-2 text-indigo-600"></i> Active Budget Goals
+                </h3>
+
+                <table class="w-full text-sm text-gray-700 dark:text-gray-200">
+                    <thead class="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600 uppercase tracking-wider text-xs">
+                        <tr>
+                            <th class="py-3 px-2 text-left">Category</th>
+                            <th class="py-3 px-2 text-left">Amount</th>
+                            <th class="py-3 px-2 text-left">Period</th>
+                            <th class="py-3 px-2 text-center">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% if budgets %}
+                            {% for b in budgets %}
+                            <tr class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                <td class="py-3 px-2 font-semibold text-gray-800 dark:text-gray-100">
+                                    {{ b[1] }}
+                                </td>
+                                <td class="py-3 px-2 font-bold text-green-600 dark:text-green-400">
+                                    {{ b[3] }} {{ "{:,.2f}".format(b[2]) }}
+                                </td>
+                                <td class="py-3 px-2 text-xs text-gray-500 dark:text-gray-400">
+                                    {{ b[4] }} <i class="fas fa-arrow-right mx-1 text-xs"></i> {{ b[5] }}
+                                </td>
+                                <td class="py-3 px-2 flex justify-center">
+                                    <form method="POST"
+                                          action="{{ url_for('delete_budget', budget_id=b[0]) }}"
+                                          onsubmit="return confirm('Permanently delete the budget for {{ b[1] }}?');">
+                                        <button class="text-red-500 hover:text-red-700 transition">
+                                            <i class="fas fa-trash-alt text-base"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="py-6 text-center text-gray-500 dark:text-gray-400">
+                                    No budgets currently active. Time to set your first goal!
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

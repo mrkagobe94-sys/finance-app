@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-sans p-4">
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl max-w-5xl w-full border border-gray-100 dark:border-gray-700">
+        
+        <div class="hidden md:flex flex-col justify-between text-gray-800 dark:text-gray-200 p-4 border-r dark:border-gray-700">
+            <div>
+                <h2 class="text-4xl font-extrabold mb-4 text-orange-600 dark:text-orange-400">
+                    Smarter Money.
+                </h2>
+                <h3 class="text-2xl font-bold mb-6 text-gray-700 dark:text-gray-100">
+                    Zero Guesswork.
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+                    FIN.AI is your advanced financial copilot. Track spending, analyze cash flow, predict trends,
+                    and make data-backed financial decisions — all in a beautifully simple interface.
+                </p>
+
+                <ul class="space-y-4 text-sm">
+                    <li class="flex items-center space-x-3">
+                        <i class="fas fa-magic text-indigo-500 w-4"></i>
+                        <span class="font-medium">AI-driven financial insights</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <i class="fas fa-lock text-indigo-500 w-4"></i>
+                        <span class="font-medium">Bank-grade security & privacy</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <i class="fas fa-chart-bar text-indigo-500 w-4"></i>
+                        <span class="font-medium">Predictive budgeting & alerts</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <i class="fas fa-hand-holding-usd text-indigo-500 w-4"></i>
+                        <span class="font-medium">Automatic expense categorization</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mt-10 text-xs italic text-gray-500 dark:text-gray-400">
+                &ldquo;If you don’t track it, you can’t grow it.&rdquo;
+            </div>
+        </div>
+
+        <div class="p-6">
+            <h1 class="text-3xl font-bold mb-2 text-center text-gray-800 dark:text-gray-100">
+                FIN.AI Login
+            </h1>
+            <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-8">
+                Welcome back. Let’s optimize your money.
+            </p>
+
+            <form method="POST" action="/login" class="space-y-6">
+                
+                <div>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Username"
+                            class="w-full p-4 pl-12 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            class="w-full p-4 pl-12 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <button
+                    class="w-full bg-gradient-to-r from-orange-600 to-indigo-600 text-white p-4 rounded-xl font-bold text-lg hover:from-orange-700 hover:to-indigo-700 shadow-lg transition"
+                >
+                    <i class="fas fa-sign-in-alt mr-2"></i> Login & Analyze
+                </button>
+            </form>
+
+            <div class="flex justify-between items-center mt-6 text-sm">
+                <a href="#" class="text-indigo-600 dark:text-indigo-400 hover:underline transition">
+                    Forgot password?
+                </a>
+                <a href="/register" class="text-orange-600 dark:text-orange-400 font-bold hover:underline transition">
+                    <i class="fas fa-user-plus mr-1"></i> Create account
+                </a>
+            </div>
+
+            <div class="mt-8 grid grid-cols-3 gap-3 text-center text-xs">
+                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl dark:text-gray-300">
+                    <i class="fas fa-credit-card text-lg text-green-500 mb-1"></i><br>
+                    <span class="font-bold">Track</span>
+                </div>
+                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl dark:text-gray-300">
+                    <i class="fas fa-chart-line text-lg text-blue-500 mb-1"></i><br>
+                    <span class="font-bold">Analyze</span>
+                </div>
+                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl dark:text-gray-300">
+                    <i class="fas fa-leaf text-lg text-yellow-500 mb-1"></i><br>
+                    <span class="font-bold">Grow</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

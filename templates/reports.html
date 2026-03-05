@@ -1,0 +1,183 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-sans">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hidden md:flex flex-col border-r border-gray-200 dark:border-gray-700 shadow-xl dark:shadow-none">
+        <div class="p-6 font-extrabold text-2xl tracking-wide text-orange-600 dark:text-orange-400">
+            FIN.AI
+        </div>
+
+        <nav class="flex-1 mt-8 space-y-2 px-4">
+            <a href="{{ url_for('dashboard') }}"
+               class="flex items-center space-x-3 py-3 px-4 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                <i class="fas fa-home w-5"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('budgets') }}"
+               class="flex items-center space-x-3 py-3 px-4 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                <i class="fas fa-wallet w-5"></i>
+                <span>Budgets</span>
+            </a>
+            <a href="{{ url_for('goals') }}"
+               class="flex items-center space-x-3 py-3 px-4 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                <i class="fas fa-bullseye w-5"></i>
+                <span>Goals</span>
+            </a>
+            <a href="{{ url_for('reports') }}"
+               class="flex items-center space-x-3 py-3 px-4 bg-orange-50 dark:bg-gray-700 border-l-4 border-orange-600 dark:border-orange-500 font-semibold rounded-lg text-gray-900 dark:text-gray-100 transition-colors duration-200">
+                <i class="fas fa-chart-line w-5"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto mb-4 mx-4 flex justify-end items-center">
+            <a href="{{ url_for('logout') }}"
+               class="py-2 px-4 text-center bg-gray-100 dark:bg-gray-700 text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg font-semibold transition text-sm">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 flex flex-col overflow-y-auto">
+        <header class="bg-white dark:bg-gray-800 shadow-md p-5 sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                <i class="fas fa-chart-line text-orange-600 mr-3"></i> Financial Reports
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Data-driven insights to guide your financial future.</p>
+        </header>
+
+        <main class="p-6 md:p-10 space-y-8 flex-1">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- CATEGORY PIE CHART -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 flex flex-col">
+                    <h3 class="font-extrabold text-xl text-gray-800 dark:text-gray-100 mb-6 border-b pb-3 flex items-center text-orange-600">
+                        <i class="fas fa-chart-pie mr-2"></i> Category Breakdown (Total UGX)
+                    </h3>
+                    {% if category_data and category_data|length > 0 %}
+                        <div class="flex-1 h-96">
+                            <canvas id="categoryPieChart" class="h-full w-full"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="flex-1 flex flex-col justify-center items-center bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center">
+                            <i class="fas fa-exclamation-circle text-4xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600 dark:text-gray-400">No category data available yet. Add some transactions to see your spending distribution.</p>
+                            <a href="{{ url_for('dashboard') }}" class="text-orange-600 dark:text-orange-400 font-semibold mt-2 hover:underline">Go to Dashboard</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- MONTHLY SPENDING BAR CHART -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 flex flex-col">
+                    <h3 class="font-extrabold text-xl text-gray-800 dark:text-gray-100 mb-6 border-b pb-3 flex items-center text-indigo-600">
+                        <i class="fas fa-chart-bar mr-2"></i> Spending Over Time (UGX per Month)
+                    </h3>
+                    {% if month_data and month_data|length > 0 %}
+                        <div class="flex-1 h-96">
+                            <canvas id="monthlyBarChart" class="h-full w-full"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="flex-1 flex flex-col justify-center items-center bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center">
+                            <i class="fas fa-calendar-alt text-4xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600 dark:text-gray-400">No monthly trend data available. Add transactions from different months to track your habits.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const categoryLabels = {{ category_labels | tojson }};
+    const categoryData = {{ category_data | tojson }};
+    const monthLabels = {{ month_labels | tojson }};
+    const monthData = {{ month_data | tojson }};
+
+    const chartColors = [
+        '#f97316', '#4f46e5', '#10b981', '#ef4444',
+        '#3b82f6', '#a855f7', '#f59e0b', '#64748b'
+    ];
+
+    function updateChartColors() {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const textColor = isDarkMode ? '#e5e7eb' : '#374151';
+        const gridColor = isDarkMode ? '#374151' : '#e5e7eb';
+        Chart.defaults.color = textColor;
+        Chart.defaults.borderColor = gridColor;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateChartColors();
+
+        if (categoryData && categoryData.length > 0) {
+            new Chart(document.getElementById('categoryPieChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        data: categoryData,
+                        backgroundColor: chartColors.slice(0, categoryLabels.length),
+                        borderColor: 'rgb(255, 255, 255)',
+                        borderWidth: 2,
+                        hoverOffset: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: Chart.defaults.color, font: { size: 14, weight: 'bold' } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed !== null) label += 'UGX ' + context.parsed.toLocaleString('en-US');
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        if (monthData && monthData.length > 0) {
+            new Chart(document.getElementById('monthlyBarChart'), {
+                type: 'bar',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: 'Total Spending (UGX)',
+                        data: monthData,
+                        backgroundColor: chartColors[1],
+                        borderRadius: 6,
+                        hoverBackgroundColor: chartColors[0]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Amount (UGX)', color: Chart.defaults.color }, ticks: { color: Chart.defaults.color } },
+                        x: { title: { display: true, text: 'Month', color: Chart.defaults.color }, ticks: { color: Chart.defaults.color } }
+                    }
+                }
+            });
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateChartColors);
+    });
+</script>
+{% endblock %}

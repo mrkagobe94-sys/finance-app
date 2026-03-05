@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6 font-sans transition-colors duration-300">
+    
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg border border-gray-100 dark:border-gray-700">
+        
+        <div class="text-center mb-7">
+            <h1 class="text-3xl font-extrabold text-gray-800 dark:text-gray-100 flex items-center justify-center space-x-2">
+                <i class="fas fa-pencil-alt text-orange-600"></i>
+                <span>Edit Transaction</span>
+            </h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Fine-tune your financial record details
+            </p>
+        </div>
+
+        <form action="{{ url_for('update_transaction', transaction_id=t[0]) }}"
+              method="POST"
+              class="space-y-5">
+
+            <div>
+                <label class="block text-gray-600 dark:text-gray-300 text-xs font-bold mb-1 uppercase tracking-wider">
+                    Transaction Date
+                </label>
+                <input type="date"
+                       name="date"
+                       value="{{ t[6] }}"
+                       required
+                       class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition">
+            </div>
+
+            <div class="flex gap-4">
+                <div class="w-2/3">
+                    <label class="block text-gray-600 dark:text-gray-300 text-xs font-bold mb-1 uppercase tracking-wider">
+                        Amount
+                    </label>
+                    <input type="number"
+                           step="0.01"
+                           name="amount"
+                           value="{{ t[2] }}"
+                           required
+                           class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500 transition">
+                </div>
+
+                <div class="w-1/3">
+                    <label class="block text-gray-600 dark:text-gray-300 text-xs font-bold mb-1 uppercase tracking-wider">
+                        Currency
+                    </label>
+                    <select name="currency"
+                            class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500">
+                        {% for currency in currencies %}
+                        <option value="{{ currency }}"
+                                {% if t[3] == currency %} selected {% endif %}>
+                            {{ currency }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-gray-600 dark:text-gray-300 text-xs font-bold mb-1 uppercase tracking-wider">
+                    Category
+                </label>
+                <select name="category"
+                        class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500">
+                    {% for category in categories %}
+                    <option value="{{ category }}"
+                            {% if t[4] == category %} selected {% endif %}>
+                        {{ category }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-gray-600 dark:text-gray-300 text-xs font-bold mb-1 uppercase tracking-wider">
+                    Description
+                </label>
+                <input type="text"
+                       name="description"
+                       value="{{ t[5] }}"
+                       placeholder="Enter optional details or notes"
+                       class="w-full p-3 border border-gray-300 rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+
+            <div class="bg-indigo-50 dark:bg-indigo-900 border border-indigo-200 dark:border-indigo-700 text-indigo-800 dark:text-indigo-300 text-xs p-3 rounded-xl shadow-inner">
+                <i class="fas fa-robot mr-1"></i> 
+                <span class="font-bold">AI Note:</span> Accurate edits improve future spending predictions and budget accuracy.
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="submit"
+                        class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 shadow-lg transition">
+                    <i class="fas fa-check-circle mr-2"></i> Save Changes
+                </button>
+
+                <a href="{{ url_for('dashboard') }}"
+                   class="w-full text-center bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300 p-3 rounded-xl font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                    <i class="fas fa-times mr-2"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
